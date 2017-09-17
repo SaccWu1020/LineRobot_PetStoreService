@@ -30,4 +30,4 @@ app.use((err, req, res, next) => {
   next(err); // will throw default 500
 })
 
-app.listen(8080)
+app.listen(process.env.port || 8080)
