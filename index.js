@@ -6,7 +6,11 @@ var env = require('dotenv').config();
 
 const app = express()
 
-const config = env.parsed
+const config = {
+  channelAccessToken: process.env.channelAccessToken || env.parsed.channelAccessToken,
+  channelSecret: process.env.channelSecret || env.parsed.channelSecret
+}
+console.log(config);
 
 app.use(middleware(config))
 
@@ -30,4 +34,4 @@ app.use((err, req, res, next) => {
   next(err); // will throw default 500
 })
 
-app.listen(process.env.port || 8080)
+app.listen(process.env.port || 5000)
