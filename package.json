@@ -22,6 +22,7 @@
   "homepage": "https://github.com/TeHsiang/LineRobot_PetStoreService#readme",
   "dependencies": {
     "@line/bot-sdk": "^3.0.0",
+    "dotenv": "^4.0.0",
     "express": "^4.15.4",
     "line-messaging": "^1.1.8"
   },
