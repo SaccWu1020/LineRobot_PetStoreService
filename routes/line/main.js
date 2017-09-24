@@ -1,9 +1,7 @@
 // 載入組態檔
 require('dotenv').config()
-
 // 載入 express 套件，建立 app 應用程式
-const express = require('express')
-const app = express()
+const app = require('../../express_app_instance')
 
 // 載入 Line Api
 const middleware = require('@line/bot-sdk').middleware
@@ -31,7 +29,24 @@ function LineAppMain () {
   })
 
   // 事件註冊陣列
-  this.events = {}
+  this._events = {}
+  this.Event = {
+    USER: "user",
+    GROUP: "group",
+    ROOM: "room",
+    MESSAGE: "message",
+    FOLLOW: "follow",
+    UNFOLLOW: "unfollow",
+    JOIN: "join",
+    LEAVE: "leave",
+    POSTBACK: "postback",
+    BEACON: "beacon"
+  }
+}
+
+// 事件註冊機
+LineAppMain.prototype.GetEvents = function () {
+  return this._events;
 }
 
 // 事件註冊機
@@ -48,10 +63,10 @@ LineAppMain.prototype.on = function (event_name) {
     throw "handle is not function."
   }
   // 註冊事件
-  if(this.events[event_name] === undefined) {
-    this.events[event_name] = []
+  if(this._events[event_name] === undefined) {
+    this._events[event_name] = []
   }
-  this.events[event_name].push({
+  this._events[event_name].push({
     data: (arguments.length === 3) ? arguments[1] || {} : {},
     handle: (arguments.length === 3) ? arguments[2] : arguments[1]
   })
@@ -59,6 +74,15 @@ LineAppMain.prototype.on = function (event_name) {
 
 var main = module.exports = new LineAppMain()
 
-// 建立 Line Api 專用的回應路由 (router) 
-// 詳情請參考： https://line.github.io/line-bot-sdk-nodejs/pages/guide/webhook.html
-module.exports.webhook = require('./webhook').bind(main)
+// 載入大家撰寫的事件
+var normalizedPath = require("path").join(__dirname, "events");
+require("fs").readdirSync(normalizedPath).forEach(function(file) {
+  var func = require("./events/" + file)
+  if(typeof func === "function") {
+    console.log("debug: requrie ./events/" + file)
+    func(main);
+  }
+  else {
+    throw func + " not a function";
+  }
+});
