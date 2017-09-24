@@ -14,7 +14,13 @@ module.exports = function (req, res) {
                     reply_messages = _.without(reply_messages, undefined, false, null) 
                     reply_messages = _.filter(reply_messages, (o)=>JSON.stringify(o)!==JSON.stringify({})) 
                 if(reply_messages.length > 0) {
-                    LineAppMain.client.replyMessage(event.replyToken, reply_messages)
+                    LineAppMain.client
+                        .replyMessage(event.replyToken, reply_messages)
+                        .then(function () {
+
+                        })
+                        .catch(function (err) {
+                        })
                 }
             }
         }
