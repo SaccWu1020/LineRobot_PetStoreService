@@ -2,7 +2,6 @@
 require('dotenv').config()
 // 載入 express 套件，建立 app 應用程式
 const app = require('../../express_app_instance')
-
 // 載入 Line Api
 const middleware = require('@line/bot-sdk').middleware
 const JSONParseError = require('@line/bot-sdk/exceptions').JSONParseError
@@ -26,6 +25,12 @@ function LineAppMain () {
       return
     }
     next(err) // will throw default 500
+  })
+
+  // line app sdk instance
+  const line = require('@line/bot-sdk')
+  this.client = new line.Client({
+    channelAccessToken: process.env.channelAccessToken
   })
 
   // 事件註冊陣列
@@ -79,8 +84,10 @@ var normalizedPath = require("path").join(__dirname, "events");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
   var func = require("./events/" + file)
   if(typeof func === "function") {
-    console.log("debug: requrie ./events/" + file)
-    func(main);
+    if(!func.debug || func.debug && process.env.DEBUG) {
+      console.log("requrie ./events/" + file)
+      func(main);
+    }
   }
   else {
     throw func + " not a function";
